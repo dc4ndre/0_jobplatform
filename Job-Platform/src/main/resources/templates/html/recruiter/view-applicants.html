@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Applicants - JobHub</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-sm.accept {
+      background-color: #5cb85c;
+    }
+    .btn-sm.decline {
+      background-color: #d9534f;
+    }
+    .expanded-details {
+      background: #f9f9f9;
+      border-top: 1px solid #ccc;
+      padding: 1rem;
+      display: none;
+    }
+    tr.expanded + tr .expanded-details {
+      display: table-cell;
+    }
+    tr.expanded td {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <h1 class="logo">JobHub</h1>
+      <nav>
+        <a href="../index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="post-job.html">Post Job</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+  <main class="applicants-page">
+    <div class="container">
+      <h2>Applicants Overview</h2>
+      <table class="applicant-table">
+        <thead>
+          <tr>
+            <th>Applicant Name</th>
+            <th>Applied For</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Applicant 1 -->
+           <tr>
+            <td>Jane Doe</td>
+            <td>Frontend Developer</td>
+            <td>Pending</td>
+           <td>
+            <div class="action-buttons">
+              <a href="#" class="btn-sm view-btn" data-id="1">View</a>
+              <a href="#" class="btn-sm accept">Accept</a>
+              <a href="#" class="btn-sm decline">Decline</a>
+            </div>
+          </td>
+        </tr>
+        <tr id="details-1" class="details-row hidden-row">
+          <td colspan="4">
+            <div class="expanded-details">
+              <strong>Jane's Cover Letter:</strong>
+              <p>I'm a React developer with a passion for clean UIs and fast performance.</p>
+            </div>
+          </td>
+        </tr>
+          <!-- Applicant 2 -->
+          <tr>
+            <td>Michael Smith</td>
+            <td>Data Analyst</td>
+            <td>Reviewed</td>
+            <td>
+              <div class="action-buttons">
+                <a href="#" class="btn-sm" data-id="2">View</a>
+                <a href="#" class="btn-sm accept">Accept</a>
+                <a href="#" class="btn-sm decline">Decline</a>
+              </div>
+            </td>
+          </tr>
+          <tr id="details-2" class="details-row hidden-row"></tr>
+            <td colspan="4">
+              <div class="expanded-details">
+                <strong>Michael's Summary:</strong>
+                <p>Skilled in Python, SQL, and Tableau. Looking to drive insights through meaningful data.</p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Applicant 3 -->
+          <tr>
+            <td>Sarah Lee</td>
+            <td>UI/UX Designer</td>
+            <td>Interview Scheduled</td>
+            <td>
+              <div class="action-buttons">
+                <a href="#" class="btn-sm"data-id="3">View</a>
+                <a href="#" class="btn-sm accept">Accept</a>
+                <a href="#" class="btn-sm decline">Decline</a>
+              </div>
+            </td>
+          </tr>
+          <tr id="details-3" class="details-row hidden-row"></tr>
+            <td colspan="4">
+              <div class="expanded-details">
+                <strong>Sarah's Portfolio:</strong>
+                <p>Designed modern, responsive UIs using Figma. Passionate about user experience.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 JobHub. All rights reserved.</p>
+    </div>
+  </footer>
+  <script>
+    document.querySelectorAll('.view-btn').forEach(button => {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const id = this.getAttribute('data-id');
+        const detailRow = document.getElementById('details-' + id);
+        detailRow.classList.toggle('hidden-row');
+      });
+    });
+  </script>
+</body>
+</html>

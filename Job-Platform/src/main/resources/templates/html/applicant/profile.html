@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile - JobHire</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <h1 class="logo">JobHire</h1>
+      <nav>
+        <a href="../index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="application-status.html">Applications</a>
+        <a href="job-listings.html">Jobs</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="form-page">
+    <div class="container">
+      <h2>My Profile</h2>
+      <form class="form-box" action="#">
+        <label for="full-name">Full Name</label>
+        <input type="text" id="full-name" value="Jane Doe" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" value="jane@example.com" required />
+
+        <label for="bio">Bio</label>
+        <textarea id="bio" rows="5" placeholder="Tell us about your skills, experience, goals...">Passionate frontend developer with 3 years experience building modern UIs.</textarea>
+
+        <button type="submit" class="btn">Save Changes</button>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 JobHire. All rights reserved.</p>
+    </div>
+  </footer>
+  <script>
+    document.querySelector('form')?.addEventListener('submit', function(e) {
+      const requiredFields = this.querySelectorAll('[required]');
+      let allFilled = true;
+  
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          allFilled = false;
+          field.style.borderColor = 'red';
+        } else {
+          field.style.borderColor = '#ccc';
+        }
+      });
+  
+      if (!allFilled) {
+        e.preventDefault();
+        alert("Please fill out all required fields.");
+      }
+    });
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Listings - JobHub</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <h1 class="logo">JobHire</h1>
+      <nav>
+        <a href="../index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="application-status.html">My Applications</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="job-listings-page">
+    <div class="container">
+      <h2>Available Jobs</h2>
+
+      <div class="job-card">
+        <h3>Frontend Developer</h3>
+        <p><strong>Company:</strong> DevWave Inc.</p>
+        <p><strong>Location:</strong> Remote</p>
+        <p>We're looking for a passionate frontend developer with experience in React and Tailwind.</p>
+        <a href="job-details.html?id=frontend" class="btn btn-sm">View Job</a>
+      </div>
+
+      <div class="job-card">
+        <h3>Data Analyst</h3>
+        <p><strong>Company:</strong> InsightWorks</p>
+        <p><strong>Location:</strong> New York, NY</p>
+        <p>Analyze data trends and help shape business decisions using Python and SQL.</p>
+        <a href="job-details.html?id=analyst" class="btn btn-sm">View Job</a>
+      </div>
+
+      <div class="job-card">
+        <h3>UI/UX Designer</h3>
+        <p><strong>Company:</strong> PixelForge Studio</p>
+        <p><strong>Location:</strong> Hybrid (Austin, TX)</p>
+        <p>Create intuitive and beautiful user interfaces for digital products.</p>
+        <a href="job-details.html?id=designer" class="btn btn-sm">View Job</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 JobHire. All rights reserved.</p>
+    </div>
+  </footer>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const jobId = params.get("id");
+  
+    document.querySelectorAll(".job-detail-card").forEach(card => {
+      card.style.display = "none";
+    });
+  
+    const match = document.getElementById(jobId);
+    if (match) {
+      match.style.display = "block";
+    } else {
+      console.warn("Job ID not found in DOM:", jobId);
+    }
+  </script>
+</body>
+</html>

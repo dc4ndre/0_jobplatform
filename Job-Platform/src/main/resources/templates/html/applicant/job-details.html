@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Details - JobHire</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <h1 class="logo">JobHire</h1>
+      <nav>
+        <a href="../index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="job-listings.html">Back to Listings</a>
+        <a href="application-status.html">My Applications</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="job-detail-page">
+    <div class="container">
+      <p id="no-job-message" style="display:none; text-align:center;">No job selected or not found. <a href="job-listings.html">Go back</a></p>
+
+      <!-- Job 1 -->
+      <section class="job-detail-card" id="frontend">
+        <h2>Frontend Developer</h2>
+        <p><strong>Company:</strong> DevWave Inc.</p>
+        <p><strong>Location:</strong> Remote</p>
+        <p><strong>Description:</strong></p>
+        <p>
+          Join our team to build elegant and responsive web interfaces using modern frontend tools.
+          We use React, Tailwind, and Vite for our frontend stack.
+        </p>
+        <p><strong>Requirements:</strong></p>
+        <ul>
+          <li>2+ years experience with JavaScript and React</li>
+          <li>CSS proficiency (Tailwind preferred)</li>
+          <li>Experience consuming REST APIs</li>
+        </ul>
+        <a href="#" class="btn btn-sm">Apply Now</a>
+      </section>
+
+      <!-- Job 2 -->
+      <section class="job-detail-card" id="analyst">
+        <h2>Data Analyst</h2>
+        <p><strong>Company:</strong> InsightWorks</p>
+        <p><strong>Location:</strong> New York, NY</p>
+        <p><strong>Description:</strong></p>
+        <p>
+          Analyze business data to uncover trends, build dashboards, and support data-driven decisions.
+        </p>
+        <p><strong>Requirements:</strong></p>
+        <ul>
+          <li>Proficiency in SQL and Python</li>
+          <li>Experience with data visualization tools (e.g., Tableau, Power BI)</li>
+          <li>Understanding of statistical analysis</li>
+        </ul>
+        <a href="#" class="btn btn-sm">Apply Now</a>
+      </section>
+
+      <!-- Job 3 -->
+      <section class="job-detail-card" id="designer">
+        <h2>UI/UX Designer</h2>
+        <p><strong>Company:</strong> PixelForge Studio</p>
+        <p><strong>Location:</strong> Hybrid (Austin, TX)</p>
+        <p><strong>Description:</strong></p>
+        <p>
+          Create seamless user experiences and modern interface designs for digital platforms. Collaborate with product and engineering teams.
+        </p>
+        <p><strong>Requirements:</strong></p>
+        <ul>
+          <li>Strong portfolio of UI/UX design work</li>
+          <li>Fluency with Figma or Adobe XD</li>
+          <li>Understanding of responsive design</li>
+        </ul>
+        <a href="#" class="btn btn-sm">Apply Now</a>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 JobHire. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("URL Params:", window.location.search);
+      const params = new URLSearchParams(window.location.search);
+      const jobId = params.get("id");
+
+      document.querySelectorAll(".job-detail-card").forEach(card => {
+        card.style.display = "none";
+      });
+
+      const match = document.getElementById(jobId);
+      if (match) {
+        match.style.display = "block";
+      } else {
+        document.getElementById("no-job-message").style.display = "block";
+        console.warn("Job ID not found in DOM:", jobId);
+      }
+    });
+  </script>
+</body>
+</html>
