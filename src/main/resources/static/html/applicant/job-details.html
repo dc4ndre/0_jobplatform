@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Details - JobHire</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <h1 class="logo">JobHire</h1>
+      <nav>
+        <a href="../index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="job-listings.html">Back to Listings</a>
+        <a href="application-status.html">My Applications</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="job-detail-page">
+    <div class="container">
+      <div id="job-container">
+        <p>Loading job details...</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 JobHire. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const jobId = params.get("id");
+
+    const userId = 2; // TODO: Replace with session login later
+
+    async function loadJobDetails() {
+      if (!jobId) {
+        document.getElementById("job-container").innerHTML = `
+          <p style="text-align:center;">No job selected. <a href="job-listings.html">Go back</a></p>`;
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:8080/api/jobs/all`);
+        const jobs = await res.json();
+        const job = jobs.find(j => j.id == jobId);
+
+        if (!job) {
+          document.getElementById("job-container").innerHTML = `<p>Job not found.</p>`;
+          return;
+        }
+
+        document.getElementById("job-container").innerHTML = `
+          <section class="job-detail-card">
+            <h2>${job.title}</h2>
+            <p><strong>Company:</strong> ${job.company}</p>
+            <p><strong>Location:</strong> ${job.location}</p>
+            <p><strong>Description:</strong></p>
+            <p>${job.description}</p>
+            <p><strong>Requirements:</strong></p>
+            <p>${job.requirements}</p>
+            <button class="btn btn-sm" onclick="applyToJob(${job.id})">Apply Now</button>
+          </section>
+        `;
+      } catch (err) {
+        document.getElementById("job-container").innerHTML = `<p>Error loading job.</p>`;
+        console.error(err);
+      }
+    }
+
+    async function applyToJob(jobId) {
+      const response = await fetch(`http://localhost:8080/api/applications/apply?jobId=${jobId}&userId=${userId}`, {
+        method: "POST"
+      });
+      const result = await response.text();
+      alert(result);
+    }
+
+    loadJobDetails();
+  </script>
+</body>
+</html>

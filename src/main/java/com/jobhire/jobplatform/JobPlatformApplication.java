@@ -1,4 +1,4 @@
-package com.jobhire.Job_Platform;
+package com.jobhire.jobplatform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

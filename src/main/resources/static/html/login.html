@@ -23,10 +23,10 @@
       <h2>Login to JobHire</h2>
       <form class="form-box" action="#">
         <label for="email">Email Address</label>
-        <input type="email" id="email" placeholder="you@example.com" required />
+        <input type="email" id="email" placeholder="Email" required />
 
         <label for="password">Password</label>
-        <input type="password" id="password" placeholder="••••••••" required />
+        <input type="password" id="password" placeholder="Password" required />
 
         <button class="btn" type="submit">Login</button>
       </form>
@@ -42,25 +42,23 @@
     </div>
   </footer>
   <script>
-    document.querySelector('form')?.addEventListener('submit', function(e) {
-      const requiredFields = this.querySelectorAll('[required]');
-      let allFilled = true;
-  
-      requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-          allFilled = false;
-          field.style.borderColor = 'red';
-        } else {
-          field.style.borderColor = '#ccc';
-        }
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+    
+      const user = {
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+      };
+    
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user)
       });
-  
-      if (!allFilled) {
-        e.preventDefault();
-        alert("Please fill out all required fields.");
-      }
+    
+      const result = await response.text();
+      alert(result);
     });
-  </script>
-  
+    </script>
 </body>
 </html>

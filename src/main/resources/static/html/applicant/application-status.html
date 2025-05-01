@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Applications - JobHire</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <h1 class="logo">JobHire</h1>
+      <nav>
+        <a href="../index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="job-listings.html">Find Jobs</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="application-status-page">
+    <div class="container">
+      <h2>My Applications</h2>
+      <div id="appList">Loading...</div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 JobHire. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const userId = 2; // TODO: Replace with sessionStorage.getItem("userId")
+
+    fetch("http://localhost:8080/api/applications/job/1") // we need to call all jobs to get all apps
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("appList");
+
+        const userApps = data.filter(app => app.applicant.id == userId);
+
+        if (userApps.length === 0) {
+          list.innerHTML = "<p>You haven't applied to any jobs yet.</p>";
+          return;
+        }
+
+        list.innerHTML = userApps.map(app => `
+          <div class="job-card">
+            <h3>${app.job.title}</h3>
+            <p><strong>Company:</strong> ${app.job.company}</p>
+            <p><strong>Status:</strong> ${app.status}</p>
+          </div>
+        `).join('');
+      })
+      .catch(err => {
+        document.getElementById("appList").innerHTML = "Could not load applications.";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>

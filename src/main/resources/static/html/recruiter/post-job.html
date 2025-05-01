@@ -49,25 +49,28 @@
     </div>
   </footer>
   <script>
-    document.querySelector('form')?.addEventListener('submit', function(e) {
-      const requiredFields = this.querySelectorAll('[required]');
-      let allFilled = true;
-  
-      requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-          allFilled = false;
-          field.style.borderColor = 'red';
-        } else {
-          field.style.borderColor = '#ccc';
-        }
+    document.getElementById("jobForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+    
+      const job = {
+        title: document.getElementById("title").value,
+        company: document.getElementById("company").value,
+        location: document.getElementById("location").value,
+        description: document.getElementById("description").value,
+        requirements: document.getElementById("requirements").value
+      };
+    
+      const recruiterId = document.getElementById("recruiterId").value;
+    
+      const response = await fetch(`http://localhost:8080/api/jobs/post?recruiterId=${recruiterId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(job)
       });
-  
-      if (!allFilled) {
-        e.preventDefault();
-        alert("Please fill out all required fields.");
-      }
+    
+      const result = await response.text();
+      alert(result);
     });
-  </script>
-  
+    </script> 
 </body>
 </html>
