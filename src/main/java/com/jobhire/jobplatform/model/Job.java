@@ -5,10 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
 
 @Entity
-@Data
 public class Job {
 
     @Id
@@ -16,11 +14,42 @@ public class Job {
     private Long id;
 
     private String title;
-    private String company;
-    private String location;
     private String description;
-    private String requirements;
 
     @ManyToOne
-    private User postedBy; // recruiter
+    private User postedBy;
+
+    // Getters and Setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public User getPostedBy() {
+        return postedBy;
+    }
+
+    public void setPostedBy(User postedBy) {
+        this.postedBy = postedBy;
+    }
 }
