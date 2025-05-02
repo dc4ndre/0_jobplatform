@@ -1,15 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* General Reset & Base */
 /* General Reset & Base */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f9f9f9;
-    color: #333;
-    line-height: 1.6;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Updated */
+  background: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+}
+
   
   /* Container */
   .container {
@@ -273,6 +277,7 @@
   .applicant-table td a:hover {
     text-decoration: underline;
   }
+  
   .status-page {
     padding: 3rem 1rem;
     background: #fff;
@@ -310,4 +315,50 @@
   .hidden-row {
     display: none;
   }
+  .application-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .application-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  }
+  
+  .application-card h3 {
+    color: #0077cc;
+    margin-bottom: 0.5rem;
+  }
+  
+  .application-card p {
+    margin: 0.3rem 0;
+    color: #444;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: white;
+  }
+  
+  .status-badge.pending {
+    background-color: #f0ad4e;
+  }
+  
+  .status-badge.accepted {
+    background-color: #5cb85c;
+  }
+  
+  .status-badge.rejected {
+    background-color: #d9534f;
+  }
+  
      

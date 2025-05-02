@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>View Applicants - JobHub</title>
+  <title>View Applicants - JobiJobi</title>
   <link rel="stylesheet" href="../css/style.css" />
   <style>
     .action-buttons {
@@ -28,20 +28,25 @@
     tr.expanded td {
       font-weight: bold;
     }
+    .hidden-row {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <header class="navbar">
     <div class="container">
-      <h1 class="logo">JobHub</h1>
+      <h1 class="logo">JobiJobi</h1>
       <nav>
-        <a href="../index.html">Home</a>
+        
         <a href="dashboard.html">Dashboard</a>
         <a href="post-job.html">Post Job</a>
         <a href="profile.html">Profile</a>
+        <a href="../index.html">Log Out</a>
       </nav>
     </div>
   </header>
+
   <main class="applicants-page">
     <div class="container">
       <h2>Applicants Overview</h2>
@@ -54,71 +59,8 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Applicant 1 -->
-           <tr>
-            <td>Jane Doe</td>
-            <td>Frontend Developer</td>
-            <td>Pending</td>
-           <td>
-            <div class="action-buttons">
-              <a href="#" class="btn-sm view-btn" data-id="1">View</a>
-              <a href="#" class="btn-sm accept">Accept</a>
-              <a href="#" class="btn-sm decline">Decline</a>
-            </div>
-          </td>
-        </tr>
-        <tr id="details-1" class="details-row hidden-row">
-          <td colspan="4">
-            <div class="expanded-details">
-              <strong>Jane's Cover Letter:</strong>
-              <p>I'm a React developer with a passion for clean UIs and fast performance.</p>
-            </div>
-          </td>
-        </tr>
-          <!-- Applicant 2 -->
-          <tr>
-            <td>Michael Smith</td>
-            <td>Data Analyst</td>
-            <td>Reviewed</td>
-            <td>
-              <div class="action-buttons">
-                <a href="#" class="btn-sm" data-id="2">View</a>
-                <a href="#" class="btn-sm accept">Accept</a>
-                <a href="#" class="btn-sm decline">Decline</a>
-              </div>
-            </td>
-          </tr>
-          <tr id="details-2" class="details-row hidden-row"></tr>
-            <td colspan="4">
-              <div class="expanded-details">
-                <strong>Michael's Summary:</strong>
-                <p>Skilled in Python, SQL, and Tableau. Looking to drive insights through meaningful data.</p>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Applicant 3 -->
-          <tr>
-            <td>Sarah Lee</td>
-            <td>UI/UX Designer</td>
-            <td>Interview Scheduled</td>
-            <td>
-              <div class="action-buttons">
-                <a href="#" class="btn-sm"data-id="3">View</a>
-                <a href="#" class="btn-sm accept">Accept</a>
-                <a href="#" class="btn-sm decline">Decline</a>
-              </div>
-            </td>
-          </tr>
-          <tr id="details-3" class="details-row hidden-row"></tr>
-            <td colspan="4">
-              <div class="expanded-details">
-                <strong>Sarah's Portfolio:</strong>
-                <p>Designed modern, responsive UIs using Figma. Passionate about user experience.</p>
-              </div>
-            </td>
-          </tr>
+        <tbody id="applicant-body">
+          <tr><td colspan="4">Loading applications...</td></tr>
         </tbody>
       </table>
     </div>
@@ -126,18 +68,101 @@
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2025 JobHub. All rights reserved.</p>
+      <p>&copy; 2025 <strong>JobiJobi</strong>. All rights reserved. Made with 💙 in the Philippines.</p>
     </div>
   </footer>
+
   <script>
-    document.querySelectorAll('.view-btn').forEach(button => {
-      button.addEventListener('click', function (e) {
-        e.preventDefault();
-        const id = this.getAttribute('data-id');
-        const detailRow = document.getElementById('details-' + id);
-        detailRow.classList.toggle('hidden-row');
+    async function loadRecruiterApplications() {
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      if (!user || user.role !== "recruiter") {
+        alert("Unauthorized. Recruiter only.");
+        window.location.href = "../login.html";
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:8080/api/applications/by-recruiter?recruiterId=${user.id}`);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const applications = await res.json();
+        const tbody = document.getElementById("applicant-body");
+
+        if (!applications || applications.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='4'>No applications received yet.</td></tr>";
+          return;
+        }
+
+        tbody.innerHTML = applications.map((app, index) => `
+          <tr>
+            <td>${app.applicant?.name || "N/A"}</td>
+            <td>${app.job?.title || "Unknown Job"}</td>
+            <td>${app.status}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-sm view-btn" data-id="${index}">View</button>
+                <button class="btn-sm accept" onclick="updateStatus(${app.id}, 'Accepted')">Accept</button>
+                <button class="btn-sm decline" onclick="updateStatus(${app.id}, 'Rejected')">Decline</button>
+              </div>
+            </td>
+          </tr>
+          <tr id="details-${index}" class="details-row hidden-row">
+            <td colspan="4">
+              <div class="expanded-details">
+                <strong>Applied On:</strong> ${new Date(app.appliedAt).toLocaleDateString()}<br>
+                <strong>Email:</strong> ${app.applicant?.email || "N/A"}<br>
+                <strong>Phone:</strong> ${app.applicant?.phone || "N/A"}
+              </div>
+            </td>
+          </tr>
+        `).join("");
+
+        attachToggleListeners();
+      } catch (error) {
+        console.error("Error loading applications:", error);
+        document.getElementById("applicant-body").innerHTML = 
+          `<tr><td colspan="4">Error loading applications: ${error.message}</td></tr>`;
+      }
+    }
+
+    function attachToggleListeners() {
+      document.querySelectorAll('.view-btn').forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.preventDefault();
+          const id = this.getAttribute('data-id');
+          const detailRow = document.getElementById('details-' + id);
+          detailRow.classList.toggle('hidden-row');
+        });
       });
-    });
+    }
+
+    async function updateStatus(applicationId, newStatus) {
+      try {
+        const res = await fetch(`http://localhost:8080/api/applications/${applicationId}/status`, {
+          method: "PUT",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionStorage.getItem("token")}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to update status");
+        }
+
+        alert("Status updated successfully!");
+        loadRecruiterApplications(); // Refresh list
+      } catch (error) {
+        console.error("Update error:", error);
+        alert(`Failed to update status: ${error.message}`);
+      }
+    }
+
+    // Load applications when page loads
+    document.addEventListener('DOMContentLoaded', loadRecruiterApplications);
   </script>
 </body>
 </html>

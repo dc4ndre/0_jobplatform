@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Profile - JobHire</title>
+  <title>My Profile - JobiJobi</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
   <header class="navbar">
     <div class="container">
-      <h1 class="logo">JobHire</h1>
+      <h1 class="logo">JobiJobi</h1>
       <nav>
-        <a href="../index.html">Home</a>
+        
         <a href="dashboard.html">Dashboard</a>
         <a href="application-status.html">Applications</a>
         <a href="job-listings.html">Jobs</a>
+        <a href="../index.html">Log Out</a>
       </nav>
     </div>
   </header>
@@ -39,39 +40,46 @@
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2025 JobHire. All rights reserved.</p>
+      <p>&copy; 2025 <strong>JobiJobi</strong>. All rights reserved. Made with 💙 in the Philippines.</p>
     </div>
   </footer>
 
   <script>
     const currentUser = JSON.parse(sessionStorage.getItem("user"));
+    if (!currentUser) {
+      alert("You're not logged in.");
+      window.location.href = "login.html";
+    }
+  
+    // Populate the form
     document.querySelector("#name").value = currentUser.name;
     document.querySelector("#email").value = currentUser.email;
     document.querySelector("#bio").value = currentUser.bio || "";
-
+  
     document.querySelector("#profileForm").addEventListener("submit", async function (e) {
       e.preventDefault();
-
+  
       const name = document.querySelector("#name").value;
       const email = document.querySelector("#email").value;
       const bio = document.querySelector("#bio").value;
-
+  
       const response = await fetch(`http://localhost:8080/api/profile/${currentUser.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ name, email, bio })
+        body: JSON.stringify({ name, email, bio }) // ✅ make sure bio is sent
       });
-
+  
       if (response.ok) {
         const updated = await response.json();
-        sessionStorage.setItem("user", JSON.stringify(updated));
+        sessionStorage.setItem("user", JSON.stringify(updated)); // ✅ update local copy
         alert("Profile updated!");
       } else {
         alert("Failed to update profile.");
       }
     });
   </script>
+  
 </body>
 </html>

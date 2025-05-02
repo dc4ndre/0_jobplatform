@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Post a Job - JobHire</title>
+  <title>Post a Job - JobiJobi</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
   <header class="navbar">
     <div class="container">
-      <h1 class="logo">JobHire</h1>
+      <h1 class="logo">JobiJobi</h1>
       <nav>
-        <a href="../index.html">Home</a>
+        
         <a href="dashboard.html">Dashboard</a>
         <a href="view-applicants.html">Applicants</a>
         <a href="profile.html">Profile</a>
+        <a href="../index.html">Log Out</a>
       </nav>
     </div>
   </header>
@@ -22,7 +23,7 @@
   <main class="form-page">
     <div class="container">
       <h2>Post a New Job</h2>
-      <form class="form-box" action="#">
+      <form id="jobForm" class="form-box">
         <label for="title">Job Title</label>
         <input type="text" id="title" placeholder="e.g. Backend Developer" required />
 
@@ -45,32 +46,46 @@
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2025 JobHire. All rights reserved.</p>
+      <p>&copy; 2025 <strong>JobiJobi</strong>. All rights reserved. Made with 💙 in the Philippines.</p>
     </div>
   </footer>
+
   <script>
-    document.getElementById("jobForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
+    document.addEventListener("DOMContentLoaded", function () {
+      const currentUser = JSON.parse(sessionStorage.getItem("user"));
+      if (!currentUser || currentUser.role !== "recruiter") {
+        alert("Only recruiters can post jobs.");
+        window.location.href = "../login.html";
+        return;
+      }
     
-      const job = {
-        title: document.getElementById("title").value,
-        company: document.getElementById("company").value,
-        location: document.getElementById("location").value,
-        description: document.getElementById("description").value,
-        requirements: document.getElementById("requirements").value
-      };
+      const form = document.querySelector(".form-box");
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
     
-      const recruiterId = document.getElementById("recruiterId").value;
+        const job = {
+          title: document.getElementById("title").value,
+          company: document.getElementById("company").value,
+          location: document.getElementById("location").value,
+          description: document.getElementById("description").value,
+          requirements: document.getElementById("requirements").value
+        };
     
-      const response = await fetch(`http://localhost:8080/api/jobs/post?recruiterId=${recruiterId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(job)
+        const response = await fetch(`http://localhost:8080/api/jobs/post?recruiterId=${currentUser.id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(job)
+        });
+    
+        const result = await response.text();
+        if (response.ok) {
+          alert("Job posted!");
+          form.reset();
+        } else {
+          alert("Failed: " + result);
+        }
       });
-    
-      const result = await response.text();
-      alert(result);
     });
-    </script> 
+    </script>    
 </body>
 </html>

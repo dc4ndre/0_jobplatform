@@ -3,62 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Applications - JobHire</title>
+  <title>My Applications - JobiJobi</title>
   <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .application-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .application-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+    }
+    .application-card h3 {
+      color: #0077cc;
+      margin-bottom: 0.5rem;
+    }
+    .application-card p {
+      margin: 0.3rem 0;
+      color: #444;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: white;
+    }
+    .status-pending {
+      background-color: #f0ad4e;
+    }
+    .status-accepted {
+      background-color: #5cb85c;
+    }
+    .status-rejected {
+      background-color: #d9534f;
+    }
+  </style>
 </head>
 <body>
   <header class="navbar">
     <div class="container">
-      <h1 class="logo">JobHire</h1>
+      <h1 class="logo">JobiJobi</h1>
       <nav>
-        <a href="../index.html">Home</a>
         <a href="dashboard.html">Dashboard</a>
-        <a href="job-listings.html">Find Jobs</a>
+        <a href="job-listings.html">Job Listings</a>
         <a href="profile.html">Profile</a>
+        <a href="../index.html">Log Out</a>
       </nav>
     </div>
   </header>
 
-  <main class="application-status-page">
+  <main class="applications-page">
     <div class="container">
       <h2>My Applications</h2>
-      <div id="appList">Loading...</div>
+      <div id="applications-container" class="application-list">
+        <p>Loading applications...</p>
+      </div>
     </div>
   </main>
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2025 JobHire. All rights reserved.</p>
+      <p>&copy; 2025 <strong>JobiJobi</strong>. All rights reserved. Made with 💙 in the Philippines.</p>
     </div>
   </footer>
 
   <script>
-    const userId = 2; // TODO: Replace with sessionStorage.getItem("userId")
+    async function loadApplications() {
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      if (!user || user.role !== "applicant") {
+        alert("Unauthorized. Applicants only.");
+        window.location.href = "../login.html";
+        return;
+      }
 
-    fetch("http://localhost:8080/api/applications/job/1") // we need to call all jobs to get all apps
-      .then(res => res.json())
-      .then(data => {
-        const list = document.getElementById("appList");
+      try {
+        const res = await fetch(`http://localhost:8080/api/applications?applicantId=${user.id}`);
+        const apps = await res.json();
 
-        const userApps = data.filter(app => app.applicant.id == userId);
-
-        if (userApps.length === 0) {
-          list.innerHTML = "<p>You haven't applied to any jobs yet.</p>";
+        const container = document.getElementById("applications-container");
+        if (!apps || apps.length === 0) {
+          container.innerHTML = "<p>You haven't applied to any jobs yet.</p>";
           return;
         }
 
-        list.innerHTML = userApps.map(app => `
-          <div class="job-card">
-            <h3>${app.job.title}</h3>
-            <p><strong>Company:</strong> ${app.job.company}</p>
-            <p><strong>Status:</strong> ${app.status}</p>
-          </div>
-        `).join('');
-      })
-      .catch(err => {
-        document.getElementById("appList").innerHTML = "Could not load applications.";
-        console.error(err);
-      });
+        container.innerHTML = apps.map(app => {
+          const status = (app.status || "Pending").toLowerCase();
+          const badgeClass =
+            status === "accepted" ? "status-accepted" :
+            status === "rejected" ? "status-rejected" : "status-pending";
+
+          return `
+            <div class="application-card">
+              <h3>${app.job?.title || "Unknown Job"}</h3>
+              <p><strong>Company:</strong> ${app.recruiter?.name || "Unknown Recruiter"}</p>
+              <p><strong>Location:</strong> ${app.job?.location || "Unknown Location"}</p>
+              <p><strong>Applied On:</strong> ${new Date(app.appliedAt).toLocaleDateString()}</p>
+              <p><strong>Status:</strong> <span class="status-badge ${badgeClass}">${app.status || "Pending"}</span></p>
+            </div>
+          `;
+        }).join("");
+      } catch (err) {
+        console.error("Failed to load applications:", err);
+        document.getElementById("applications-container").innerHTML = "<p>Error loading applications.</p>";
+      }
+    }
+
+    loadApplications();
   </script>
 </body>
 </html>

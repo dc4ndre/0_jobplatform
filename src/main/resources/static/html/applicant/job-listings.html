@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Job Listings - JobHire</title>
+  <title>Job Listings - JobiJobi</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
   <header class="navbar">
     <div class="container">
-      <h1 class="logo">JobHire</h1>
+      <h1 class="logo">JobiJobi</h1>
       <nav>
-        <a href="../index.html">Home</a>
+        
         <a href="dashboard.html">Dashboard</a>
         <a href="application-status.html">My Applications</a>
         <a href="profile.html">Profile</a>
+        <a href="../index.html">Log Out</a>
       </nav>
     </div>
   </header>
@@ -22,40 +23,32 @@
   <main class="job-listings-page">
     <div class="container">
       <h2>Available Jobs</h2>
-      <div id="job-list"></div>
+      <div id="jobs-container"></div>
     </div>
   </main>
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2025 JobHire. All rights reserved.</p>
+      <p>&copy; 2025 <strong>JobiJobi</strong>. All rights reserved. Made with 💙 in the Philippines.</p>
     </div>
   </footer>
 
   <script>
-    fetch("http://localhost:8080/api/jobs/all")
-      .then(res => res.json())
-      .then(jobs => {
-        const container = document.getElementById("job-list");
-        if (jobs.length === 0) {
-          container.innerHTML = "<p>No jobs available right now.</p>";
-          return;
-        }
-
-        container.innerHTML = jobs.map(job => `
-          <div class="job-card">
-            <h3>${job.title}</h3>
-            <p><strong>Company:</strong> ${job.company}</p>
-            <p><strong>Location:</strong> ${job.location}</p>
-            <p>${job.description.length > 100 ? job.description.slice(0, 100) + '...' : job.description}</p>
-            <a href="job-details.html?id=${job.id}" class="btn btn-sm">View Job</a>
-          </div>
-        `).join('');
-      })
-      .catch(err => {
-        document.getElementById("job-list").innerHTML = "Failed to load jobs.";
-        console.error("Error loading jobs:", err);
-      });
+    async function loadJobs() {
+      const res = await fetch("http://localhost:8080/api/jobs");
+      const jobs = await res.json();
+      const container = document.getElementById("jobs-container");
+      container.innerHTML = jobs.map(job => `
+        <div class="job-card">
+          <h3>${job.title}</h3>
+          <p><strong>Company:</strong> ${job.postedBy.name}</p>
+          <p><strong>Location:</strong> ${job.location}</p>
+          <p>${job.description}</p>
+          <a href="job-details.html?id=${job.id}" class="btn btn-sm">View Job</a>
+        </div>
+      `).join("");
+    }
+    loadJobs();
   </script>
 </body>
 </html>

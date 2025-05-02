@@ -3,34 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Company Profile - JobHire</title>
+  <title>My Profile - JobiJobi</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
   <header class="navbar">
     <div class="container">
-      <h1 class="logo">JobHire</h1>
+      <h1 class="logo">JobiJobi</h1>
       <nav>
-        <a href="../index.html">Home</a>
         <a href="dashboard.html">Dashboard</a>
-        <a href="post-job.html">Post Job</a>
-        <a href="view-applicants.html">Applicants</a>
+        <a href="view-applicants.html">Applications</a>
+        <a href="../index.html">Log Out</a>
       </nav>
     </div>
   </header>
 
   <main class="form-page">
     <div class="container">
-      <h2>Company Profile</h2>
-      <form class="form-box" action="#">
-        <label for="company-name">Company Name</label>
-        <input type="text" id="company-name" value="DevWave Inc." required />
+      <h2>My Profile</h2>
+      <form id="profileForm" class="form-box">
+        <label for="name">Company Name</label>
+        <input type="text" id="name" required />
 
-        <label for="email">Contact Email</label>
-        <input type="email" id="email" value="recruit@devwave.com" required />
+        <label for="email">Company Email</label>
+        <input type="email" id="email" required />
 
-        <label for="about">About Company</label>
-        <textarea id="about" rows="5">We build cutting-edge digital experiences using modern web tech.</textarea>
+        <label for="bio">Bio</label>
+        <textarea id="bio" rows="5"></textarea>
 
         <button type="submit" class="btn">Save Changes</button>
       </form>
@@ -39,26 +38,57 @@
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2025 JobHire. All rights reserved.</p>
+      <p>&copy; 2025 <strong>JobiJobi</strong>. All rights reserved. Made with 💙 in the Philippines.</p>
     </div>
   </footer>
+
   <script>
-    document.querySelector('form')?.addEventListener('submit', function(e) {
-      const requiredFields = this.querySelectorAll('[required]');
-      let allFilled = true;
+    const currentUser = JSON.parse(sessionStorage.getItem("user"));
+    if (!currentUser || currentUser.role !== "recruiter") {
+      alert("You're not logged in.");
+      window.location.href = "../login.html";
+    }
   
-      requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-          allFilled = false;
-          field.style.borderColor = 'red';
-        } else {
-          field.style.borderColor = '#ccc';
-        }
+    // ✅ Get latest recruiter data from backend
+    fetch(`http://localhost:8080/api/profile/${currentUser.id}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        return res.json();
+      })
+      .then(freshUser => {
+        // Populate form with fresh values
+        document.querySelector("#name").value = freshUser.name || "";
+        document.querySelector("#email").value = freshUser.email || "";
+        document.querySelector("#bio").value = freshUser.bio || "";
+  
+        // Update sessionStorage
+        sessionStorage.setItem("user", JSON.stringify(freshUser));
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error loading profile data.");
       });
   
-      if (!allFilled) {
-        e.preventDefault();
-        alert("Please fill out all required fields.");
+    // ✅ Save changes
+    document.querySelector("#profileForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+  
+      const name = document.querySelector("#name").value;
+      const email = document.querySelector("#email").value;
+      const bio = document.querySelector("#bio").value;
+  
+      const response = await fetch(`http://localhost:8080/api/profile/${currentUser.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, bio })
+      });
+  
+      if (response.ok) {
+        const updated = await response.json();
+        sessionStorage.setItem("user", JSON.stringify(updated));
+        alert("Profile updated!");
+      } else {
+        alert("Failed to update profile.");
       }
     });
   </script>

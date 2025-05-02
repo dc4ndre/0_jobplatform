@@ -11,11 +11,12 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void send(String to, String subject, String body) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(to);
-        msg.setSubject(subject);
-        msg.setText(body);
-        mailSender.send(msg);
+    public void sendSimpleMessage(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("mhyrr.delacruz@gmail.com"); // Should match spring.mail.username in application.properties
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        mailSender.send(message);
     }
 }
