@@ -22,15 +22,15 @@
   <main class="form-page">
     <div class="container">
       <h2>My Profile</h2>
-      <form class="form-box" action="#">
-        <label for="full-name">Full Name</label>
-        <input type="text" id="full-name" value="Jane Doe" required />
+      <form id="profileForm" class="form-box">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" required />
 
         <label for="email">Email</label>
-        <input type="email" id="email" value="jane@example.com" required />
+        <input type="email" id="email" required />
 
         <label for="bio">Bio</label>
-        <textarea id="bio" rows="5" placeholder="Tell us about your skills, experience, goals...">Passionate frontend developer with 3 years experience building modern UIs.</textarea>
+        <textarea id="bio" rows="5"></textarea>
 
         <button type="submit" class="btn">Save Changes</button>
       </form>
@@ -42,26 +42,36 @@
       <p>&copy; 2025 JobHire. All rights reserved.</p>
     </div>
   </footer>
+
   <script>
-    document.querySelector('form')?.addEventListener('submit', function(e) {
-      const requiredFields = this.querySelectorAll('[required]');
-      let allFilled = true;
-  
-      requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-          allFilled = false;
-          field.style.borderColor = 'red';
-        } else {
-          field.style.borderColor = '#ccc';
-        }
+    const currentUser = JSON.parse(sessionStorage.getItem("user"));
+    document.querySelector("#name").value = currentUser.name;
+    document.querySelector("#email").value = currentUser.email;
+    document.querySelector("#bio").value = currentUser.bio || "";
+
+    document.querySelector("#profileForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const name = document.querySelector("#name").value;
+      const email = document.querySelector("#email").value;
+      const bio = document.querySelector("#bio").value;
+
+      const response = await fetch(`http://localhost:8080/api/profile/${currentUser.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, bio })
       });
-  
-      if (!allFilled) {
-        e.preventDefault();
-        alert("Please fill out all required fields.");
+
+      if (response.ok) {
+        const updated = await response.json();
+        sessionStorage.setItem("user", JSON.stringify(updated));
+        alert("Profile updated!");
+      } else {
+        alert("Failed to update profile.");
       }
     });
   </script>
-  
 </body>
 </html>
