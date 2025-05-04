@@ -89,19 +89,38 @@ public ResponseEntity<?> applyToJob(@RequestBody Map<String, Long> data) {
     }
 
     @GetMapping("/by-recruiter")
-    public ResponseEntity<?> getApplicationsByRecruiter(@RequestParam Long recruiterId) {
-        try {
-            Optional<User> recruiter = userRepo.findById(recruiterId);
-            if (recruiter.isEmpty()) {
-                return ResponseEntity.badRequest().body("Recruiter not found.");
+public ResponseEntity<?> getApplicationsByRecruiter(@RequestParam Long recruiterId) {
+    try {
+        Optional<User> recruiter = userRepo.findById(recruiterId);
+        if (recruiter.isEmpty()) {
+            return ResponseEntity.badRequest().body("Recruiter not found.");
+        }
+
+        List<Application> applications = appRepo.findByRecruiterId(recruiterId);
+
+        // Eagerly load necessary applicant/job fields to prevent lazy loading issues
+        for (Application app : applications) {
+            User applicant = app.getApplicant();
+            if (applicant != null) {
+                applicant.getName();  // trigger lazy load
+                applicant.getEmail();
+                applicant.getBio();   // ensure bio is accessible
             }
 
-            List<Application> applications = appRepo.findByRecruiterId(recruiterId);
-            return ResponseEntity.ok(applications);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error fetching applications: " + e.getMessage());
+            Job job = app.getJob();
+            if (job != null) {
+                job.getTitle(); // ensure job title is loaded
+            }
         }
+
+        return ResponseEntity.ok(applications);
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError().body("Error fetching applications: " + e.getMessage());
     }
+}
+
+
+
 
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {

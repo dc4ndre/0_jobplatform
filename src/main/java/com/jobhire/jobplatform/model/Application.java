@@ -19,25 +19,24 @@ public class Application {
     private Long id;
 
     @ManyToOne
-    @JsonIgnoreProperties({"applications", "jobs", "password", "email"})
+    @JsonIgnoreProperties({"applications", "jobs", "password"}) // ✅ keep email, bio, name visible
     private User applicant;
 
     @ManyToOne
-    @JsonIgnoreProperties({"applications", "jobs", "password", "email"})
+    @JsonIgnoreProperties({"applications", "jobs", "password"}) // ✅ same here
     private User recruiter;
 
     @ManyToOne
-    @JsonIgnoreProperties({"applications", "postedBy"})
+    @JsonIgnoreProperties({"applications", "postedBy"}) // ✅ job title accessible
     private Job job;
 
     private LocalDateTime appliedAt;
 
     @Column(nullable = false)
-    private String status = "Pending"; // Default
-    
+    private String status = "Pending";
+
     @Column(length = 1000)
     private String message;
-
 
     // Getters & Setters
     public Long getId() { return id; }
@@ -57,11 +56,6 @@ public class Application {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
 }

@@ -32,6 +32,7 @@ body {
   .navbar .logo {
     font-size: 1.5rem;
     font-weight: bold;
+    color: #009688;
   }
   .navbar nav {
     float: right;
@@ -42,7 +43,7 @@ body {
     text-decoration: none;
   }
   .navbar nav a:hover {
-    color: #0077cc;
+    color: #009688;
   }
   
   /* Hero Section */
@@ -65,7 +66,7 @@ body {
     gap: 1rem;
   }
   .btn {
-    background: #0077cc;
+    background: #009688;
     color: white;
     padding: 0.75rem 1.5rem;
     border: none;
@@ -75,8 +76,8 @@ body {
   }
   .btn-outline {
     background: transparent;
-    border: 2px solid #0077cc;
-    color: #0077cc;
+    border: 2px solid #009688;
+    color: #009688;
   }
   .btn:hover {
     opacity: 0.9;
@@ -114,7 +115,7 @@ body {
   .form-box input:focus,
   .form-box select:focus {
     outline: none;
-    border-color: #0077cc;
+    border-color: #009688;
   }
   .form-footer {
     text-align: center;
@@ -122,7 +123,7 @@ body {
     color: #555;
   }
   .form-footer a {
-    color: #0077cc;
+    color: #009688;
     text-decoration: none;
   }
   .form-footer a:hover {
@@ -140,7 +141,7 @@ body {
   .about-page h3 {
     margin-top: 2rem;
     font-size: 1.25rem;
-    color: #0077cc;
+    color: #009688;
   }
   .about-page p {
     margin-top: 0.5rem;
@@ -172,18 +173,18 @@ body {
   }
   .card-link:hover {
     background: #f5faff;
-    border-color: #0077cc;
+    border-color: #009688;
   }
   .card-link h3 {
     margin-bottom: 0.5rem;
-    color: #0077cc;
+    color: #009688;
   }
   .card-link p {
     color: #555;
   }
   .job-listings-page {
     padding: 3rem 1rem;
-    background: #fff;
+    background: #f9f9f9;
   }
   .job-listings-page h2 {
     margin-bottom: 2rem;
@@ -197,7 +198,7 @@ body {
     margin-bottom: 1.5rem;
   }
   .job-card h3 {
-    color: #0077cc;
+    color: #009688;
     margin-bottom: 0.25rem;
   }
   .job-card p {
@@ -210,7 +211,7 @@ body {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     background: #bce3ff;
-    color: white;
+    color: black;
     text-decoration: none;
     border-radius: 4px;
   }
@@ -229,7 +230,7 @@ body {
     background: #fafafa;
   }
   .job-detail-card h2 {
-    color: #0077cc;
+    color: #009688;
     margin-bottom: 0.5rem;
   }
   .job-detail-card p,
@@ -250,7 +251,7 @@ body {
   }
   .form-box textarea:focus {
     outline: none;
-    border-color: #0077cc;
+    border-color: #009688;
   }
   .applicants-page {
     padding: 3rem 1rem;
@@ -271,7 +272,7 @@ body {
     color: #333;
   }
   .applicant-table td a {
-    color: #0077cc;
+    color: #009688;
     text-decoration: none;
   }
   .applicant-table td a:hover {
@@ -331,7 +332,7 @@ body {
   }
   
   .application-card h3 {
-    color: #0077cc;
+    color: #009688;
     margin-bottom: 0.5rem;
   }
   
@@ -360,5 +361,61 @@ body {
   .status-badge.rejected {
     background-color: #d9534f;
   }
+  
+  .job-card .edit-form {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .job-card .edit-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .job-card .edit-form input,
+  .job-card .edit-form textarea {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+    background-color: #fff;
+  }
+  
+  .job-card .edit-form input:focus,
+  .job-card .edit-form textarea:focus {
+    border-color: #009688;
+    outline: none;
+  }
+  
+  .job-card .edit-form button {
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .job-card .edit-form button[type="submit"] {
+    background-color: #009688;
+    color: #fff;
+  }
+  
+  .job-card .edit-form .delete-btn {
+    background-color: #d9534f;
+    color: #fff;
+    margin-top: 0.5rem;
+  }
+  
+  .job-card .edit-form button:hover {
+    opacity: 0.9;
+  }
+  
+  
   
      

@@ -16,20 +16,10 @@
     .btn-sm.decline {
       background-color: #d9534f;
     }
-    .expanded-details {
-      background: #f9f9f9;
-      border-top: 1px solid #ccc;
-      padding: 1rem;
-      display: none;
-    }
-    tr.expanded + tr .expanded-details {
-      display: table-cell;
-    }
-    tr.expanded td {
-      font-weight: bold;
-    }
-    .hidden-row {
-      display: none;
+    .applicant-meta {
+      display: block;
+      font-size: 0.85rem;
+      color: #666;
     }
   </style>
 </head>
@@ -38,9 +28,9 @@
     <div class="container">
       <h1 class="logo">JobiJobi</h1>
       <nav>
-        
         <a href="dashboard.html">Dashboard</a>
-        <a href="post-job.html">Post Job</a>
+        <a href="post-job.html">Post New  Job</a>
+        <a href="recruiter-jobs.html">My Jobs</a>
         <a href="profile.html">Profile</a>
         <a href="../index.html">Log Out</a>
       </nav>
@@ -83,9 +73,8 @@
 
       try {
         const res = await fetch(`http://localhost:8080/api/applications/by-recruiter?recruiterId=${user.id}`);
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
         const applications = await res.json();
         const tbody = document.getElementById("applicant-body");
 
@@ -94,47 +83,32 @@
           return;
         }
 
-        tbody.innerHTML = applications.map((app, index) => `
-          <tr>
-            <td>${app.applicant?.name || "N/A"}</td>
-            <td>${app.job?.title || "Unknown Job"}</td>
-            <td>${app.status}</td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn-sm view-btn" data-id="${index}">View</button>
-                <button class="btn-sm accept" onclick="updateStatus(${app.id}, 'Accepted')">Accept</button>
-                <button class="btn-sm decline" onclick="updateStatus(${app.id}, 'Rejected')">Decline</button>
-              </div>
-            </td>
-          </tr>
-          <tr id="details-${index}" class="details-row hidden-row">
-            <td colspan="4">
-              <div class="expanded-details">
-                <strong>Applied On:</strong> ${new Date(app.appliedAt).toLocaleDateString()}<br>
-                <strong>Email:</strong> ${app.applicant?.email || "N/A"}<br>
-                <strong>Phone:</strong> ${app.applicant?.phone || "N/A"}
-              </div>
-            </td>
-          </tr>
-        `).join("");
-
-        attachToggleListeners();
+        tbody.innerHTML = applications.map((app) => {
+          const applicant = app.applicant || {};
+          const job = app.job || {};
+          return `
+            <tr>
+              <td>
+                ${applicant.name || "N/A"}<br>
+                <span class="applicant-meta">${applicant.email || "No email"}</span><br>
+                <span class="applicant-meta">${applicant.bio || "No bio provided."}</span>
+              </td>
+              <td>${job.title || "N/A"}</td>
+              <td>${app.status}</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-sm accept" onclick="updateStatus(${app.id}, 'Accepted')">Accept</button>
+                  <button class="btn-sm decline" onclick="updateStatus(${app.id}, 'Rejected')">Decline</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
       } catch (error) {
         console.error("Error loading applications:", error);
         document.getElementById("applicant-body").innerHTML = 
           `<tr><td colspan="4">Error loading applications: ${error.message}</td></tr>`;
       }
-    }
-
-    function attachToggleListeners() {
-      document.querySelectorAll('.view-btn').forEach(button => {
-        button.addEventListener('click', function (e) {
-          e.preventDefault();
-          const id = this.getAttribute('data-id');
-          const detailRow = document.getElementById('details-' + id);
-          detailRow.classList.toggle('hidden-row');
-        });
-      });
     }
 
     async function updateStatus(applicationId, newStatus) {
@@ -154,14 +128,13 @@
         }
 
         alert("Status updated successfully!");
-        loadRecruiterApplications(); // Refresh list
+        loadRecruiterApplications();
       } catch (error) {
         console.error("Update error:", error);
         alert(`Failed to update status: ${error.message}`);
       }
     }
 
-    // Load applications when page loads
     document.addEventListener('DOMContentLoaded', loadRecruiterApplications);
   </script>
 </body>

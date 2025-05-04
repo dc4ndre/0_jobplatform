@@ -7,11 +7,26 @@
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
+  <style>
+    .status-open {
+    color: #2ecc71; /* green */
+    font-weight: bold;
+  }
+  
+  .status-closed {
+    color: #e74c3c; /* red */
+    font-weight: bold;
+  }
+  
+  .status-default {
+    color: #555;
+    font-style: italic;
+  }
+  </style>
   <header class="navbar">
     <div class="container">
       <h1 class="logo">JobiJobi</h1>
       <nav>
-        
         <a href="dashboard.html">Dashboard</a>
         <a href="job-listings.html">Back to Listings</a>
         <a href="application-status.html">My Applications</a>
@@ -19,7 +34,7 @@
       </nav>
     </div>
   </header>
-
+  
   <main class="job-detail-page">
     <div class="container">
       <div id="job-container">
@@ -60,12 +75,27 @@
         <section class="job-detail-card">
           <h2>${job.title}</h2>
           <p><strong>Company:</strong> ${job.postedBy?.name || "Unknown"}</p>
+          <p><strong>Status:</strong> <span id="job-status"></span></p>
           <p><strong>Location:</strong> ${job.location}</p>
           <p><strong>Description:</strong><br>${job.description}</p>
           <p><strong>Requirements:</strong><br>${job.requirements}</p>
           <button class="btn btn-sm" onclick="applyToJob(${job.id}, ${job.postedBy?.id})">Apply Now</button>
         </section>
       `;
+
+      const statusElement = document.getElementById("job-status");
+      const status = (job.status || "").toLowerCase();
+
+statusElement.textContent = job.status || "Not specified";
+
+if (status === "open") {
+  statusElement.className = "status-open";
+} else if (status === "closed") {
+  statusElement.className = "status-closed";
+} else {
+  statusElement.className = "status-default";
+}
+
     }
 
     async function applyToJob(jobId, recruiterId) {
