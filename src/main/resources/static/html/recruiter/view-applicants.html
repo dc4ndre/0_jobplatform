@@ -21,6 +21,13 @@
       font-size: 0.85rem;
       color: #666;
     }
+    .resume-link {
+      display: inline-block;
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      color: #007bff;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -86,12 +93,19 @@
         tbody.innerHTML = applications.map((app) => {
           const applicant = app.applicant || {};
           const job = app.job || {};
+          const resumeUrl = applicant.resumeUrl;
+
           return `
             <tr>
               <td>
                 ${applicant.name || "N/A"}<br>
                 <span class="applicant-meta">${applicant.email || "No email"}</span><br>
-                <span class="applicant-meta">${applicant.bio || "No bio provided."}</span>
+                <span class="applicant-meta">${applicant.bio || "No bio provided."}</span><br>
+                ${
+                  resumeUrl
+                    ? `<a class="resume-link" href="${resumeUrl}" target="_blank">📄 View Resume</a>`
+                    : `<span class="applicant-meta">No resume uploaded</span>`
+                }
               </td>
               <td>${job.title || "N/A"}</td>
               <td>${app.status}</td>

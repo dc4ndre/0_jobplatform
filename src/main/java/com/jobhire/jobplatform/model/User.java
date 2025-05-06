@@ -17,6 +17,7 @@ public class User {
     private String password;
     private String role;
     private String bio = ""; // ✅ added bio
+    private String resumeUrl;
 
     // --- Getters & Setters ---
 
@@ -43,4 +44,9 @@ public class User {
     public String getBio() { return bio; }
 
     public void setBio(String bio) { this.bio = bio; }
+
+    public String getResumeUrl() { return resumeUrl; }
+
+    public void setResumeUrl(String resumeUrl) { this.resumeUrl = resumeUrl; }
+
 }

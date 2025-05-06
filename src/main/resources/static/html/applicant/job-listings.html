@@ -35,7 +35,7 @@
 
   <script>
     async function loadJobs() {
-      const res = await fetch("http://localhost:8080/api/jobs");
+      const res = await fetch(" http://localhost:8080/api/jobs");
       const jobs = await res.json();
       const container = document.getElementById("jobs-container");
       container.innerHTML = jobs.map(job => `

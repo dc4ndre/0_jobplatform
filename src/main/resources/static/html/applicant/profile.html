@@ -11,7 +11,6 @@
     <div class="container">
       <h1 class="logo">JobiJobi</h1>
       <nav>
-        
         <a href="dashboard.html">Dashboard</a>
         <a href="application-status.html">Applications</a>
         <a href="job-listings.html">Jobs</a>
@@ -23,7 +22,7 @@
   <main class="form-page">
     <div class="container">
       <h2>My Profile</h2>
-      <form id="profileForm" class="form-box">
+      <form id="profileForm" class="form-box" enctype="multipart/form-data">
         <label for="name">Full Name</label>
         <input type="text" id="name" required />
 
@@ -32,6 +31,10 @@
 
         <label for="bio">Bio</label>
         <textarea id="bio" rows="5"></textarea>
+
+        <label for="resume">Resume (PDF/DOC)</label>
+        <input type="file" id="resume" accept=".pdf,.doc,.docx" />
+        <div id="resumeStatus" style="margin-top: 5px; font-size: 0.9em; color: green;"></div>
 
         <button type="submit" class="btn">Save Changes</button>
       </form>
@@ -50,36 +53,52 @@
       alert("You're not logged in.");
       window.location.href = "login.html";
     }
-  
-    // Populate the form
-    document.querySelector("#name").value = currentUser.name;
-    document.querySelector("#email").value = currentUser.email;
-    document.querySelector("#bio").value = currentUser.bio || "";
-  
-    document.querySelector("#profileForm").addEventListener("submit", async function (e) {
+
+    // Preload form fields
+    document.getElementById("name").value = currentUser.name || "";
+    document.getElementById("email").value = currentUser.email || "";
+    document.getElementById("bio").value = currentUser.bio || "";
+
+    if (currentUser.resumeUrl) {
+      document.getElementById("resumeStatus").innerHTML = 
+        `Current Resume: <a href="${currentUser.resumeUrl}" target="_blank" style="color:blue">View</a>`;
+    }
+
+    document.getElementById("profileForm").addEventListener("submit", async function (e) {
       e.preventDefault();
-  
-      const name = document.querySelector("#name").value;
-      const email = document.querySelector("#email").value;
-      const bio = document.querySelector("#bio").value;
-  
-      const response = await fetch(`http://localhost:8080/api/profile/${currentUser.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ name, email, bio }) // ✅ make sure bio is sent
-      });
-  
-      if (response.ok) {
-        const updated = await response.json();
-        sessionStorage.setItem("user", JSON.stringify(updated)); // ✅ update local copy
+
+      const formData = new FormData();
+      formData.append("name", document.getElementById("name").value);
+      formData.append("email", document.getElementById("email").value);
+      formData.append("bio", document.getElementById("bio").value);
+
+      const resumeFile = document.getElementById("resume").files[0];
+      if (resumeFile) {
+        formData.append("resume", resumeFile);
+      }
+
+      try {
+        const res = await fetch(`http://localhost:8080/api/profile/${currentUser.id}`, {
+          method: "PUT",
+          body: formData
+        });
+
+        if (!res.ok) {
+          throw new Error("Server error");
+        }
+
+        const updatedUser = await res.json();
+        sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+        document.getElementById("resumeStatus").innerText = resumeFile 
+          ? "Resume uploaded successfully!" 
+          : "Profile updated successfully!";
         alert("Profile updated!");
-      } else {
-        alert("Failed to update profile.");
+      } catch (err) {
+        console.error(err);
+        alert("Failed to update profile. Please try again.");
       }
     });
   </script>
-  
 </body>
 </html>
