@@ -11,7 +11,6 @@
     <div class="container">
       <h1 class="logo">JobiJobi</h1>
       <nav>
-        
         <a href="dashboard.html">Dashboard</a>
         <a href="view-applicants.html">Applicants</a>
         <a href="recruiter-jobs.html">My Jobs</a>
@@ -34,6 +33,15 @@
         <label for="location">Location</label>
         <input type="text" id="location" placeholder="e.g. Remote, New York" required />
 
+        <label for="type">Job Type</label>
+        <select id="type" required>
+          <option value="">Select job type</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Internship">Internship</option>
+          <option value="Contract">Contract</option>
+        </select>
+
         <label for="description">Job Description</label>
         <textarea id="description" placeholder="Describe the role..." rows="5" required></textarea>
 
@@ -52,41 +60,53 @@
   </footer>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", () => {
       const currentUser = JSON.parse(sessionStorage.getItem("user"));
       if (!currentUser || currentUser.role !== "recruiter") {
         alert("Only recruiters can post jobs.");
         window.location.href = "../login.html";
         return;
       }
-    
-      const form = document.querySelector(".form-box");
-      form.addEventListener("submit", async function (e) {
+
+      const form = document.querySelector("#jobForm");
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
-    
+
         const job = {
-          title: document.getElementById("title").value,
-          company: document.getElementById("company").value,
-          location: document.getElementById("location").value,
-          description: document.getElementById("description").value,
-          requirements: document.getElementById("requirements").value
+          title: document.getElementById("title").value.trim(),
+          company: document.getElementById("company").value.trim(),
+          location: document.getElementById("location").value.trim(),
+          type: document.getElementById("type").value,
+          description: document.getElementById("description").value.trim(),
+          requirements: document.getElementById("requirements").value.trim()
         };
-    
-        const response = await fetch(`http://localhost:8080/api/jobs/post?recruiterId=${currentUser.id}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(job)
-        });
-    
-        const result = await response.text();
-        if (response.ok) {
-          alert("Job posted!");
-          form.reset();
-        } else {
-          alert("Failed: " + result);
+
+        if (!job.type) {
+          alert("Please select a job type.");
+          return;
+        }
+
+        try {
+          const response = await fetch(`http://localhost:8080/api/jobs/post?recruiterId=${currentUser.id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(job)
+          });
+
+          const result = await response.text();
+
+          if (response.ok) {
+            alert("Job posted successfully!");
+            form.reset();
+          } else {
+            alert("Error: " + result);
+          }
+        } catch (error) {
+          alert("Network error. Please try again later.");
+          console.error("Post error:", error);
         }
       });
     });
-    </script>    
+  </script>
 </body>
 </html>

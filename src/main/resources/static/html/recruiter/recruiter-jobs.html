@@ -58,6 +58,7 @@
         <h3>${job.title}</h3>
         <p><strong>Status:</strong> <span class="job-status">${job.status}</span></p>
         <p><strong>Location:</strong> ${job.location}</p>
+        <p><strong>Type:</strong> ${job.type || "Not specified"}</p>
         <p><strong>Description:</strong><br>${job.description}</p>
         <p><strong>Requirements:</strong><br>${job.requirements}</p>
 
@@ -67,6 +68,15 @@
           </label><br/>
           <label>Location:<br/>
             <input name="location" value="${job.location}" />
+          </label><br/>
+          <label>Type:<br/>
+            <select name="type" required>
+              <option value="">Select job type</option>
+              <option value="Full-time" ${job.type === "Full-time" ? "selected" : ""}>Full-time</option>
+              <option value="Part-time" ${job.type === "Part-time" ? "selected" : ""}>Part-time</option>
+              <option value="Internship" ${job.type === "Internship" ? "selected" : ""}>Internship</option>
+              <option value="Contract" ${job.type === "Contract" ? "selected" : ""}>Contract</option>
+            </select>
           </label><br/>
           <label>Description:<br/>
             <textarea name="description">${job.description}</textarea>
@@ -94,25 +104,24 @@
         const data = {
           title: form.title.value,
           location: form.location.value,
+          type: form.type.value,
           description: form.description.value,
           requirements: form.requirements.value,
-          status: form.status.value.toUpperCase() // Ensure uppercase
+          status: form.status.value.toUpperCase()
         };
 
-        console.log("Sending data:", data); // Debugging log
-
-        const response = await fetch(`http://localhost:8080/api/jobs/${job.id}/job-status`, {
+        // ✅ Use correct endpoint to update full job object
+        const response = await fetch(`http://localhost:8080/api/jobs/${job.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
 
-        const result = await response.text(); // Log response details
-        console.log("Server response:", result);
+        const result = await response.text();
 
         if (response.ok) {
           alert("Job updated.");
-          loadMyJobs(); // Reload jobs after update
+          loadMyJobs();
         } else {
           alert("Failed to update job. Server responded with: " + result);
         }

@@ -5,13 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Job Listings - JobiJobi</title>
   <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .filters input, .filters select {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      flex: 1;
+      min-width: 150px;
+    }
+  </style>
 </head>
 <body>
   <header class="navbar">
     <div class="container">
       <h1 class="logo">JobiJobi</h1>
       <nav>
-        
         <a href="dashboard.html">Dashboard</a>
         <a href="application-status.html">My Applications</a>
         <a href="profile.html">Profile</a>
@@ -23,6 +38,19 @@
   <main class="job-listings-page">
     <div class="container">
       <h2>Available Jobs</h2>
+      <div class="filters">
+        <input type="text" id="searchInput" placeholder="Search jobs..." onkeyup="filterJobs()">
+        <select id="typeFilter" onchange="filterJobs()">
+          <option value="">All Job Types</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Internship">Internship</option>
+          <option value="Contractual">Contract</option>
+        </select>
+        <select id="locationFilter" onchange="filterJobs()">
+          <option value="">All Locations</option>
+        </select>
+      </div>
       <div id="jobs-container"></div>
     </div>
   </main>
@@ -34,20 +62,70 @@
   </footer>
 
   <script>
+    let allJobs = [];
+
     async function loadJobs() {
-      const res = await fetch(" http://localhost:8080/api/jobs");
-      const jobs = await res.json();
+      try {
+        const res = await fetch("http://localhost:8080/api/jobs");
+        allJobs = await res.json();
+        populateLocationFilter();
+        filterJobs();
+      } catch (err) {
+        document.getElementById("jobs-container").innerHTML = "<p>Error loading jobs.</p>";
+      }
+    }
+
+    function populateLocationFilter() {
+      const locations = [...new Set(allJobs.map(job => job.location))].sort();
+      const locationSelect = document.getElementById("locationFilter");
+      locations.forEach(loc => {
+        const option = document.createElement("option");
+        option.value = loc;
+        option.textContent = loc;
+        locationSelect.appendChild(option);
+      });
+    }
+
+    function displayJobs(jobs) {
       const container = document.getElementById("jobs-container");
+      if (jobs.length === 0) {
+        container.innerHTML = "<p>No matching jobs found.</p>";
+        return;
+      }
+
       container.innerHTML = jobs.map(job => `
         <div class="job-card">
           <h3>${job.title}</h3>
           <p><strong>Company:</strong> ${job.postedBy.name}</p>
           <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>Type:</strong> ${job.type}</p>
           <p>${job.description}</p>
           <a href="job-details.html?id=${job.id}" class="btn btn-sm">View Job</a>
         </div>
       `).join("");
     }
+
+    function filterJobs() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+      const selectedType = document.getElementById("typeFilter").value;
+      const selectedLocation = document.getElementById("locationFilter").value;
+
+      const filtered = allJobs.filter(job => {
+        const matchesSearch =
+          job.title.toLowerCase().includes(keyword) ||
+          job.description.toLowerCase().includes(keyword) ||
+          job.location.toLowerCase().includes(keyword) ||
+          job.postedBy.name.toLowerCase().includes(keyword);
+
+        const matchesType = selectedType === "" || job.type === selectedType;
+        const matchesLocation = selectedLocation === "" || job.location === selectedLocation;
+
+        return matchesSearch && matchesType && matchesLocation;
+      });
+
+      displayJobs(filtered);
+    }
+
     loadJobs();
   </script>
 </body>

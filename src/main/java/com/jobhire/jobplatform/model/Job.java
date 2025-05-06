@@ -20,6 +20,8 @@ public class Job {
     private String title;
     private String location;
     private String description;
+    @Column(nullable = false)
+    private String type;
     private String requirements;
 
     @Enumerated(EnumType.STRING)
@@ -52,4 +54,12 @@ public class Job {
 
     public JobStatus getStatus() { return status; }
     public void setStatus(JobStatus status) { this.status = status; }
+
+    public String getType() {
+        return type;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
+    }
 }

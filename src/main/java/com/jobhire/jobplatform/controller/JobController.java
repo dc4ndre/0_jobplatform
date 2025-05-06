@@ -41,18 +41,24 @@ public class JobController {
     private ApplicationRepository appRepo;
 
     @PostMapping("/post")
-    public ResponseEntity<?> postJob(@RequestBody Job job, @RequestParam Long recruiterId) {
-        Optional<User> recruiter = userRepo.findById(recruiterId);
-        if (recruiter.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recruiter not found.");
-        }
-        job.setPostedBy(recruiter.get());
-        job.setStatus(JobStatus.OPEN);
-        jobRepo.save(job);
-        
-        jobRepo.flush(); // Force database commit
-        return ResponseEntity.ok("Job posted successfully.");
+public ResponseEntity<?> postJob(@RequestBody Job job, @RequestParam Long recruiterId) {
+    Optional<User> recruiter = userRepo.findById(recruiterId);
+    if (recruiter.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recruiter not found.");
     }
+
+    if (job.getType() == null || job.getType().isBlank()) {
+        return ResponseEntity.badRequest().body("Job type is required.");
+    }
+
+    job.setPostedBy(recruiter.get());
+    job.setStatus(JobStatus.OPEN);
+    jobRepo.save(job);
+    jobRepo.flush();
+
+    return ResponseEntity.ok("Job posted successfully.");
+}
+
 
     @GetMapping
     public List<Job> getAllJobs() {
@@ -97,13 +103,12 @@ public ResponseEntity<?> updateJob(@PathVariable Long id, @RequestBody Map<Strin
 
     Job job = existing.get();
 
-    // Validate and update all fields
     if (body.containsKey("title")) job.setTitle(body.get("title"));
     if (body.containsKey("description")) job.setDescription(body.get("description"));
     if (body.containsKey("location")) job.setLocation(body.get("location"));
     if (body.containsKey("requirements")) job.setRequirements(body.get("requirements"));
+    if (body.containsKey("type")) job.setType(body.get("type"));
 
-    // Ensure status update works
     if (body.containsKey("status")) {
         try {
             job.setStatus(JobStatus.valueOf(body.get("status").toUpperCase()));
@@ -112,11 +117,11 @@ public ResponseEntity<?> updateJob(@PathVariable Long id, @RequestBody Map<Strin
         }
     }
 
-  
     jobRepo.save(job);
-    jobRepo.flush(); // Force database commit
+    jobRepo.flush();
     return ResponseEntity.ok("Job updated successfully.");
 }
+
 
     // 🔄 SOFT DELETE
     @DeleteMapping("/{id}")
