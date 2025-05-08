@@ -50,50 +50,48 @@
       alert("You're not logged in.");
       window.location.href = "../login.html";
     }
-  
-    // ✅ Get latest recruiter data from backend
-    fetch(`http://localhost:8080/api/profile/${currentUser.id}`)
+
+    // 🌐 Fetch latest profile info from backend
+    fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/profile/${currentUser.id}`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch profile");
         return res.json();
       })
       .then(freshUser => {
-        // Populate form with fresh values
         document.querySelector("#name").value = freshUser.name || "";
         document.querySelector("#email").value = freshUser.email || "";
         document.querySelector("#bio").value = freshUser.bio || "";
-  
-        // Update sessionStorage
         sessionStorage.setItem("user", JSON.stringify(freshUser));
       })
       .catch(err => {
         console.error(err);
-        alert("Error loading profile data.");
+        alert("Error loading profile.");
       });
-  
-    // ✅ Save changes
+
+    // 📥 Submit profile changes (JSON only for recruiters)
     document.querySelector("#profileForm").addEventListener("submit", async function (e) {
       e.preventDefault();
-  
-      const name = document.querySelector("#name").value;
-      const email = document.querySelector("#email").value;
-      const bio = document.querySelector("#bio").value;
-  
-      const response = await fetch(`http://localhost:8080/api/profile/${currentUser.id}`, {
+
+      const updated = {
+        name: document.querySelector("#name").value,
+        email: document.querySelector("#email").value,
+        bio: document.querySelector("#bio").value
+      };
+
+      const res = await fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/profile/${currentUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, bio })
+        body: JSON.stringify(updated)
       });
-  
-      if (response.ok) {
-        const updated = await response.json();
-        sessionStorage.setItem("user", JSON.stringify(updated));
-        alert("Profile updated!");
+
+      if (res.ok) {
+        const result = await res.json();
+        sessionStorage.setItem("user", JSON.stringify(result));
+        alert("Profile updated successfully!");
       } else {
-        alert("Failed to update profile.");
+        alert("Failed to update. Check your inputs or connection.");
       }
     });
   </script>
-  
 </body>
 </html>

@@ -61,7 +61,7 @@
         return;
       }
 
-      const res = await fetch(` http://localhost:8080/api/jobs/${jobId}`);
+      const res = await fetch(` https://shame-dining-reel-valid.trycloudflare.com/api/jobs/${jobId}`);
       const job = await res.json();
 
       if (!job || !job.id) {
@@ -101,7 +101,7 @@ if (status === "open") {
     async function applyToJob(jobId, recruiterId) {
       const user = JSON.parse(sessionStorage.getItem("user"));
 
-      const res = await fetch(` http://localhost:8080/api/applications/apply`, {
+      const res = await fetch(` https://shame-dining-reel-valid.trycloudflare.com/api/applications/apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

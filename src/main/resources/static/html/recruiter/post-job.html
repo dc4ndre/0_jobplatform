@@ -87,7 +87,7 @@
         }
 
         try {
-          const response = await fetch(`http://localhost:8080/api/jobs/post?recruiterId=${currentUser.id}`, {
+          const response = await fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/jobs/post?recruiterId=${currentUser.id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(job)

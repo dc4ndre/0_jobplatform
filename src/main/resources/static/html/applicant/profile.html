@@ -78,7 +78,7 @@
       }
 
       try {
-        const res = await fetch(`http://localhost:8080/api/profile/${currentUser.id}`, {
+        const res = await fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/profile/${currentUser.id}`, {
           method: "PUT",
           body: formData
         });

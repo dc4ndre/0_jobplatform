@@ -84,7 +84,7 @@
       }
 
       try {
-        const res = await fetch(`http://localhost:8080/api/applications?applicantId=${user.id}`);
+        const res = await fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/applications?applicantId=${user.id}`);
         const apps = await res.json();
 
         const container = document.getElementById("applications-container");

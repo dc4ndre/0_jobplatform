@@ -79,7 +79,7 @@
       }
 
       try {
-        const res = await fetch(`http://localhost:8080/api/applications/by-recruiter?recruiterId=${user.id}`);
+        const res = await fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/applications/by-recruiter?recruiterId=${user.id}`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
         const applications = await res.json();
@@ -127,7 +127,7 @@
 
     async function updateStatus(applicationId, newStatus) {
       try {
-        const res = await fetch(`http://localhost:8080/api/applications/${applicationId}/status`, {
+        const res = await fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/applications/${applicationId}/status`, {
           method: "PUT",
           headers: { 
             "Content-Type": "application/json",

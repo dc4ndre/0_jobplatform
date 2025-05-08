@@ -68,60 +68,63 @@ public class AuthController {
     }
 
     // ✅ UPDATE PROFILE (WITH FILE UPLOAD)
-    @PutMapping("/profile/{id}")
-public ResponseEntity<?> updateProfile(
-        @PathVariable Long id,
-        @RequestParam("name") String name,
-        @RequestParam("email") String email,
-        @RequestParam("bio") String bio,
-        @RequestParam(value = "resume", required = false) MultipartFile resume) {
+    @PutMapping(path = "/profile/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<?> updateProfile(
+            @PathVariable Long id,
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam("bio") String bio,
+            @RequestParam(value = "resume", required = false) MultipartFile resume) {
 
-    System.out.println(">>> Updating profile for ID: " + id);
-    System.out.println(">>> Name: " + name);
-    System.out.println(">>> Email: " + email);
-    System.out.println(">>> Bio: " + bio);
-    System.out.println(">>> Resume is null? " + (resume == null));
-    if (resume != null) {
-        System.out.println(">>> Resume original name: " + resume.getOriginalFilename());
-    }
+        System.out.println(">>> Updating profile for ID: " + id);
+        Optional<User> optionalUser = userRepo.findById(id);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User ID not found.");
+        }
 
-    Optional<User> optionalUser = userRepo.findById(id);
-    if (optionalUser.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User ID not found.");
-    }
+        User user = optionalUser.get();
+        user.setName(name);
+        user.setEmail(email);
+        user.setBio(bio);
 
-    User user = optionalUser.get();
-    user.setName(name);
-    user.setEmail(email);
-    user.setBio(bio);
-
-    if (resume != null && !resume.isEmpty()) {
-        try {
-            String fileName = "resume_" + id + "_" + resume.getOriginalFilename();
-            // 1. Define uploads directory outside of Tomcat temp
+        if (resume != null && !resume.isEmpty()) {
+            try {
+                String fileName = "resume_" + id + "_" + resume.getOriginalFilename();
                 String uploadDir = System.getProperty("user.dir") + File.separator + "uploads";
                 File uploadFolder = new File(uploadDir);
-                if (!uploadFolder.exists()) {
-                    uploadFolder.mkdirs(); // Ensure it exists
-                }
+                if (!uploadFolder.exists()) uploadFolder.mkdirs();
 
-                // 2. Save file to the correct location
-                String filePath = uploadDir + File.separator + "resume_" + id + "_" + resume.getOriginalFilename();
-                File dest = new File(filePath);
+                File dest = new File(uploadDir + File.separator + fileName);
                 resume.transferTo(dest);
-
-                // 3. Save accessible relative path to user entity
-                user.setResumeUrl("/uploads/" + dest.getName());
-
-
-            user.setResumeUrl("/uploads/" + fileName);
-        } catch (IOException e) {
-            e.printStackTrace(); // log actual error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save resume.");
+                user.setResumeUrl("/uploads/" + fileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save resume.");
+            }
         }
+
+        userRepo.save(user);
+        return ResponseEntity.ok(user);
     }
 
-    userRepo.save(user);
-    return ResponseEntity.ok(user);
+    // ✅ JSON version for recruiter updates (no resume)
+    @PutMapping(path = "/profile/{id}", consumes = "application/json")
+    public ResponseEntity<?> updateProfileJson(
+            @PathVariable Long id,
+            @RequestBody User updatedUser) {
+
+        Optional<User> optionalUser = userRepo.findById(id);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User ID not found.");
+        }
+
+        User user = optionalUser.get();
+
+        if (updatedUser.getName() != null) user.setName(updatedUser.getName());
+        if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
+        if (updatedUser.getBio() != null) user.setBio(updatedUser.getBio());
+
+        userRepo.save(user);
+        return ResponseEntity.ok(user);
     }
 }

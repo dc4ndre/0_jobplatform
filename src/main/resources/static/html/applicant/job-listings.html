@@ -46,7 +46,7 @@
           <option value="Part-time">Part-time</option>
           <option value="Internship">Internship</option>
           <option value="Contractual">Contract</option>
-        </select>
+        </select> 
         <select id="locationFilter" onchange="filterJobs()">
           <option value="">All Locations</option>
         </select>
@@ -66,7 +66,7 @@
 
     async function loadJobs() {
       try {
-        const res = await fetch("http://localhost:8080/api/jobs");
+        const res = await fetch("https://shame-dining-reel-valid.trycloudflare.com/api/jobs");
         allJobs = await res.json();
         populateLocationFilter();
         filterJobs();

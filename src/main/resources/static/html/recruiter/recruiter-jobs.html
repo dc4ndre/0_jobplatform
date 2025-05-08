@@ -41,7 +41,7 @@
   }
 
   async function loadMyJobs() {
-    const res = await fetch(`http://localhost:8080/api/jobs/recruiter/${currentUser.id}`);
+    const res = await fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/jobs/recruiter/${currentUser.id}`);
     const jobs = await res.json();
     const container = document.getElementById("jobs-container");
 
@@ -111,7 +111,7 @@
         };
 
         // ✅ Use correct endpoint to update full job object
-        const response = await fetch(`http://localhost:8080/api/jobs/${job.id}`, {
+        const response = await fetch(`https://shame-dining-reel-valid.trycloudflare.com/api/jobs/${job.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
